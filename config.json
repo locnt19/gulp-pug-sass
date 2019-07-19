@@ -1,0 +1,15 @@
+{
+	"font": [
+		"bower_components/mdi/fonts/*",
+		"bower_components/font-awesome/webfonts/*",
+		"bower_components/linearicons/dist/web-font/fonts/*"
+	],
+	"globalJs": [
+		"bower_components/jquery/dist/jquery.min.js",
+		"bower_components/swiper/dist/js/swiper.min.js"
+	],
+	"globalCss": [
+		"bower_components/bootstrap/dist/css/bootstrap-grid.min.css",
+		"bower_components/swiper/dist/css/swiper.min.css"
+	]
+}
