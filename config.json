@@ -9,7 +9,9 @@
 		"bower_components/swiper/dist/js/swiper.min.js"
 	],
 	"globalCss": [
-		"bower_components/bootstrap/dist/css/bootstrap-grid.min.css",
+		"src/components/stylesheet/layout.min.css",
+		"src/components/fonts.css",
+		"src/components/stylesheet/reset.min.css",
 		"bower_components/swiper/dist/css/swiper.min.css"
 	]
 }
