@@ -1,7 +1,6 @@
 const del = require('del')
 gulp = require('gulp')
 pug = require('gulp-pug')
-Fiber = require('fibers')
 sass = require('gulp-sass')
 cssnano = require('cssnano')
 babel = require('gulp-babel')
@@ -114,9 +113,7 @@ gulp.task('css', function () {
 			allowEmpty: true
 		})
 		.pipe(srcmap.init())
-		.pipe(sass.sync({
-			fiber: Fiber
-		}).on('error', sass.logError))
+		.pipe(sass.sync().on('error', sass.logError))
 		.pipe(sassUnicode())
 		.pipe(postcss([
 			prefixer({
