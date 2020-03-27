@@ -1,17 +1,41 @@
 {
-	"font": [
-		"bower_components/mdi/fonts/*",
-		"bower_components/font-awesome/webfonts/*",
-		"bower_components/linearicons/dist/web-font/fonts/*"
-	],
-	"globalJs": [
-		"bower_components/jquery/dist/jquery.min.js",
-		"bower_components/swiper/dist/js/swiper.min.js"
-	],
-	"globalCss": [
-		"src/components/stylesheet/layout.min.css",
-		"src/components/fonts.css",
-		"src/components/stylesheet/reset.min.css",
-		"bower_components/swiper/dist/css/swiper.min.css"
-	]
+	"global": {
+		"fonts": [
+			"bower_components/mdi/fonts/*",
+			"bower_components/font-awesome/webfonts/*",
+			"bower_components/linearicons/dist/web-font/fonts/*"
+		],
+		"css": [
+			"src/assets/fonts/fonts.css"
+		],
+		"js": [
+			"bower_components/jquery/dist/jquery.min.js",
+			"bower_components/vanilla-lazyload/dist/lazyload.min.js"
+		]
+	},
+	"path": {
+		"dist": "dist",
+		"html": {
+			"src": "src/views/**/*.pug",
+			"dist": "dist"
+		},
+		"css": {
+			"mainFile": "src/components/main.sass",
+			"src": "src/components/**/*.sass",
+			"dist": "dist/css"
+		},
+		"js": {
+			"mainFile": "src/components/main.js",
+			"src": "src/components/**/*.js",
+			"dist": "dist/js"
+		},
+		"image": {
+			"src": "src/assets/images/**/*.{svg,gif,png,jpg,jpeg,webp}",
+			"dist": "dist/img"
+		},
+		"font": {
+			"src": "src/assets/fonts/**/*.{woff2,woff,eot,ttf}",
+			"dist": "dist/fonts"
+		}
+	}
 }

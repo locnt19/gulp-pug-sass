@@ -1,71 +1,86 @@
-const del = require('del')
-gulp = require('gulp')
-pug = require('gulp-pug')
-sass = require('gulp-sass')
-cssnano = require('cssnano')
-babel = require('gulp-babel')
-uglify = require('gulp-terser')
-concat = require('gulp-concat')
-rename = require('gulp-rename')
-replace = require('gulp-replace')
-plumber = require('gulp-plumber')
-postcss = require('gulp-postcss')
-prefixer = require('autoprefixer')
-srcmap = require('gulp-sourcemaps')
-cssImport = require('gulp-cssimport')
-sassUnicode = require('gulp-sass-unicode')
-cssDeclarationSorter = require('css-declaration-sorter')
-browserSync = require('browser-sync').create()
-readFileSync = require('graceful-fs').readFileSync
-sass.compiler = require('dart-sass');
+const
+	del = require('del'),
+	gulp = require('gulp'),
+	pug = require('gulp-pug'),
+	sass = require('gulp-sass'),
+	cssnano = require('cssnano'),
+	image = require('gulp-image'),
+	babel = require('gulp-babel'),
+	uglify = require('gulp-uglify'),
+	concat = require('gulp-concat'),
+	rename = require('gulp-rename'),
+	plumber = require('gulp-plumber'),
+	postcss = require('gulp-postcss'),
+	prefixer = require('autoprefixer'),
+	srcmap = require('gulp-sourcemaps'),
+	sassUnicode = require('gulp-sass-unicode'),
+	browserSync = require('browser-sync').create(),
+	readFileSync = require('graceful-fs').readFileSync,
+	cssDeclarationSorter = require('css-declaration-sorter');
 
+sass.compiler = require('node-sass');
 
-// Task clean
-gulp.task('clean', function () {
-	return del(['./dist']);
+const config = JSON.parse(readFileSync('./config.json'));
+const library = config.global;
+const path = config.path;
+
+// CLEAN IMAGE
+gulp.task('clean:image', function () {
+	return del(path.image.dist);
 })
 
-// Task copy font icon
-gulp.task('copyFontsIcon', function () {
-	let config = JSON.parse(readFileSync('./config.json'));
-	return gulp.src(config.font)
-		.pipe(gulp.dest('./dist/fonts'));
+// CLEAN ALL
+gulp.task('clean:all', function () {
+	return del(path.dist);
 })
 
-// Task copy web font
-gulp.task('copyWebFont', function () {
-	return gulp.src('./src/assets/fonts/*.{woff2,woff,eot,ttf}')
-		.pipe(gulp.dest('./dist/fonts'));
+// IMPORT FONT ICON
+gulp.task('import:font-icon', function () {
+	return gulp.src(library.fonts)
+		.pipe(gulp.dest(path.font.dist));
 })
 
-// Task clean images
-gulp.task('cleanImages', function () {
-	return del(['./dist/img'])
+// IMPORT WEBFONT
+gulp.task('import:webfont', function () {
+	return gulp.src(path.font.src)
+		.pipe(gulp.dest(path.font.dist));
 })
 
-// Task copy images
-gulp.task('copyImages', function () {
-	return gulp.src('./src/assets/images/**/**.{svg,gif,png,jpg,jpeg}')
-		.pipe(gulp.dest('./dist/img'));
+// IMPORT IMAGE
+gulp.task('import:image', function () {
+	return gulp.src(path.image.src)
+		.pipe(image())
+		.pipe(gulp.dest(path.image.dist));
 })
 
-// Task plugin JS
-gulp.task('globalJs', function () {
-	let glob = JSON.parse(readFileSync("./config.json"))
-	return gulp.src(glob.globalJs, {
+// IMPORT PLUGIN JS
+gulp.task('import:plugin-js', function () {
+	return gulp.src(library.js, {
 			allowEmpty: true
 		})
 		.pipe(concat('global.min.js'))
 		.pipe(uglify())
-		.pipe(gulp.dest('dist/js'))
+		.pipe(gulp.dest(path.js.dist))
 		.pipe(browserSync.reload({
 			stream: true
 		}))
 })
 
-// Task custom JS in website
-gulp.task('js', function () {
-	return gulp.src('./src/components/main.js', {
+// IMPORT PLUGIN CSS
+gulp.task('import:plugin-css', function () {
+	return gulp.src(library.css, {
+			allowEmpty: true,
+		})
+		.pipe(concat('global.min.css'))
+		.pipe(gulp.dest(path.css.dist))
+		.pipe(browserSync.reload({
+			stream: true
+		}))
+})
+
+// IMPORT JS
+gulp.task('import:js', function () {
+	return gulp.src(path.js.mainFile, {
 			allowEmpty: true
 		})
 		.pipe(srcmap.init())
@@ -77,39 +92,15 @@ gulp.task('js', function () {
 		.pipe(rename({
 			suffix: '.min'
 		}))
-		.pipe(gulp.dest('dist/js'))
+		.pipe(gulp.dest(path.js.dist))
 		.pipe(browserSync.reload({
 			stream: true
 		}));
 });
 
-// Task plugin CSS
-gulp.task('globalCss', function () {
-	let glob = JSON.parse(readFileSync("./config.json"))
-	return gulp.src(glob.globalCss, {
-			allowEmpty: true,
-		})
-		.pipe(concat('global.min.css'))
-		.pipe(postcss([
-			prefixer({
-				cascade: false,
-			}),
-			cssnano(),
-			cssDeclarationSorter({
-				order: 'smacss'
-			})
-		]))
-		.pipe(gulp.dest('./dist/css'))
-		.pipe(browserSync.reload({
-			stream: true
-		}))
-})
-
-// Task custom CSS in website
-gulp.task('css', function () {
-	return gulp.src([
-			'./src/components/main.sass',
-		], {
+// IMPORT CSS
+gulp.task('import:css', function () {
+	return gulp.src(path.css.mainFile, {
 			allowEmpty: true
 		})
 		.pipe(srcmap.init())
@@ -128,75 +119,63 @@ gulp.task('css', function () {
 			suffix: '.min'
 		}))
 		.pipe(srcmap.write('.'))
-		.pipe(gulp.dest('./dist/css'))
+		.pipe(gulp.dest(path.css.dist))
 		.pipe(browserSync.reload({
 			stream: true
 		}))
 });
 
-// Task compile HTML
-gulp.task('html', function () {
+// IMPORT HTML
+gulp.task('import:html', function () {
 	return gulp.src([
-			'./src/views/*.pug',
-			'!./src/views/\_*.pug'
+			path.html.src,
+			'!./src/views/\_*.pug' // ignore file _.pug
 		])
 		.pipe(pug({
 			pretty: '\t',
 		}))
 		.pipe(plumber())
-		.pipe(gulp.dest('./dist/'))
+		.pipe(gulp.dest(path.html.dist))
 		.pipe(browserSync.reload({
 			stream: true
 		}));
 });
 
-// Task watch
-gulp.task('serve', function () {
-	browserSync.init({
-			notify: false,
-			server: {
-				baseDir: './dist',
-			},
-			port: 8000
-		}),
-		gulp.watch([
-				'./config.json'
-			],
-			gulp.parallel('globalJs', 'globalCss')
-		),
-		gulp.watch([
-				'./src/assets/**/**.{svg,gif,png,jpg,jpeg}'
-			],
-			gulp.series('cleanImages', 'copyImages')
-		),
-		gulp.watch([
-				'./src/**/**.pug',
-			],
-			gulp.series('html')
-		),
-		gulp.watch([
-				'./src/components/**/**.sass',
-			],
-			gulp.series('css')
-		),
-		gulp.watch([
-				'./src/components/main.js',
-			],
-			gulp.series('js')
-		),
-		gulp.watch('./dist/*').on('change', browserSync.reload)
-})
+// IMPORT ALL
+gulp.task('import:all',
+	gulp.parallel(
+		'import:font-icon',
+		'import:webfont',
+		'import:image',
+		'import:plugin-js',
+		'import:plugin-css',
+		'import:js',
+		'import:css',
+		'import:html'
+	)
+);
 
-// Gulp task defaul
-gulp.task('default', gulp.series(
-	'clean',
-	'copyImages',
-	'copyFontsIcon',
-	'copyWebFont',
-	'globalCss',
-	'globalJs',
-	'html',
-	'css',
-	'js',
-	'serve'
-))
+// RUN STATIC SERVER AND RELOAD WHEN CHANGING SOMETHING
+gulp.task('server', function () {
+	browserSync.init({
+		notify: false,
+		server: {
+			baseDir: path.dist,
+		},
+		port: 8000
+	});
+	gulp.watch(path.image.src, gulp.series('clean:image', 'import:image'));
+	gulp.watch(path.html.src, gulp.series('import:html'));
+	gulp.watch(path.css.src, gulp.series('import:css'));
+	gulp.watch(path.js.mainFile, gulp.series('import:js'));
+	gulp.watch('./src/**/*').on('change', browserSync.reload);
+});
+
+// GULP DEFAULT
+gulp.task('default',
+	gulp.series(
+		'clean:all',
+		'import:all',
+		'server'
+	)
+);
