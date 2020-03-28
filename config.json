@@ -37,5 +37,6 @@
 			"src": "src/assets/fonts/**/*.{woff2,woff,eot,ttf}",
 			"dist": "dist/fonts"
 		}
-	}
+	},
+	"PORT": 8000
 }

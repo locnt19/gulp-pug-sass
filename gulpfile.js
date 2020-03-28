@@ -162,7 +162,7 @@ gulp.task('server', function () {
 		server: {
 			baseDir: path.dist,
 		},
-		port: 8000
+		port: config.PORT
 	});
 	gulp.watch(path.image.src, gulp.series('clean:image', 'import:image'));
 	gulp.watch(path.html.src, gulp.series('import:html'));
