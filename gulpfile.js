@@ -35,9 +35,12 @@ gulp.task('clean:all', function () {
 })
 
 // IMPORT FONT ICON
-gulp.task('import:font-icon', function () {
-	return gulp.src(library.fonts)
-		.pipe(gulp.dest(path.font.dist));
+gulp.task('import:font-icon', function (done) {
+	if (library.fonts.length > 0) {
+		return gulp.src(library.fonts)
+			.pipe(gulp.dest(path.font.dist));
+	}
+	return done();
 })
 
 // IMPORT WEBFONT
@@ -54,35 +57,41 @@ gulp.task('import:image', function () {
 })
 
 // IMPORT PLUGIN JS
-gulp.task('import:plugin-js', function () {
-	return gulp.src(library.js, {
+gulp.task('import:plugin-js', function (done) {
+	if (library.js.length > 0) {
+		return gulp.src(library.js, {
 			allowEmpty: true
 		})
-		.pipe(concat('global.min.js'))
-		.pipe(uglify())
-		.pipe(gulp.dest(path.js.dist))
-		.pipe(browserSync.reload({
-			stream: true
-		}))
+			.pipe(concat('global.min.js'))
+			.pipe(uglify())
+			.pipe(gulp.dest(path.js.dist))
+			.pipe(browserSync.reload({
+				stream: true
+			}))
+	}
+	return done();
 })
 
 // IMPORT PLUGIN CSS
-gulp.task('import:plugin-css', function () {
-	return gulp.src(library.css, {
+gulp.task('import:plugin-css', function (done) {
+	if (library.css.length > 0) {
+		return gulp.src(library.css, {
 			allowEmpty: true,
 		})
-		.pipe(concat('global.min.css'))
-		.pipe(gulp.dest(path.css.dist))
-		.pipe(browserSync.reload({
-			stream: true
-		}))
+			.pipe(concat('global.min.css'))
+			.pipe(gulp.dest(path.css.dist))
+			.pipe(browserSync.reload({
+				stream: true
+			}))
+	}
+	return done();
 })
 
 // IMPORT JS
 gulp.task('import:js', function () {
 	return gulp.src(path.js.mainFile, {
-			allowEmpty: true
-		})
+		allowEmpty: true
+	})
 		.pipe(srcmap.init())
 		.pipe(babel({
 			presets: ['@babel/preset-env']
@@ -101,8 +110,8 @@ gulp.task('import:js', function () {
 // IMPORT CSS
 gulp.task('import:css', function () {
 	return gulp.src(path.css.mainFile, {
-			allowEmpty: true
-		})
+		allowEmpty: true
+	})
 		.pipe(srcmap.init())
 		.pipe(sass.sync().on('error', sass.logError))
 		.pipe(sassUnicode())
@@ -128,9 +137,9 @@ gulp.task('import:css', function () {
 // IMPORT HTML
 gulp.task('import:html', function () {
 	return gulp.src([
-			path.html.src,
-			'!./src/views/\_*.pug' // ignore file _.pug
-		])
+		path.html.src,
+		'!./src/views/\_*.pug' // ignore file _.pug
+	])
 		.pipe(pug({
 			pretty: '\t',
 		}))
