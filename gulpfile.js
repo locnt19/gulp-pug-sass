@@ -174,10 +174,10 @@ gulp.task('server', function () {
 		port: config.PORT
 	});
 	gulp.watch(path.image.src, gulp.series('clean:image', 'import:image'));
-	gulp.watch(path.html.src, gulp.series('import:html'));
+	gulp.watch(path.html.allFile, gulp.series('import:html'));
 	gulp.watch(path.css.src, gulp.series('import:css'));
 	gulp.watch(path.js.mainFile, gulp.series('import:js'));
-	gulp.watch('./src/**/*').on('change', browserSync.reload);
+	gulp.watch('./dist/*').on('change', browserSync.reload);
 });
 
 // GULP DEFAULT

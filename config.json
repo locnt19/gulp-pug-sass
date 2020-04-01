@@ -17,6 +17,7 @@
 		"dist": "dist",
 		"html": {
 			"src": "src/views/**/*.pug",
+			"allFile": "src/**/*.pug",
 			"dist": "dist"
 		},
 		"css": {
